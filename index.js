@@ -3,7 +3,7 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 const app = express()
 const cors = require('cors');
 require('dotenv').config()
-
+const jwt = require('jsonwebtoken');
 
 const port = process.env.PORT || 5000;
 
@@ -34,7 +34,32 @@ async function run() {
     await client.connect();
 
     // collection here
+    const userCollection = client.db('summerCamp').collection('users')
+    
 
+
+    // user collection work here
+
+    app.post('/users', async(req, res) =>{
+      const user = req.body;
+      const query = {email: user.email}
+      const existingUser = await userCollection.findOne(query)
+      if(existingUser){
+        return res.send({message: 'User is Existing'})
+      }
+      const result = await userCollection.insertOne(user);
+      res.send(result)
+    })
+    
+    //-------
+    app.post('/jwt', async(req, res)=>{
+      const user = req.body;
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1h'})
+      res.send({token})
+    })
+
+
+    // --------------------------------
 
 
     // Send a ping to confirm a successful connection
