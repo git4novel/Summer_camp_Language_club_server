@@ -35,11 +35,10 @@ async function run() {
 
     // collection here
     const userCollection = client.db('summerCamp').collection('users')
-    
-
+    const classCollection = client.db('summerCamp').collection('classes')
+    const instructorCollection = client.db('summerCamp').collection('instructors')
 
     // user collection work here
-
     app.post('/users', async(req, res) =>{
       const user = req.body;
       const query = {email: user.email}
@@ -61,6 +60,21 @@ async function run() {
 
     // --------------------------------
 
+    // classes collection
+    // all classes show to classes page
+    app.get('/classes', async(req, res)=>{
+      const result = await classCollection.find().toArray()
+      res.send(result)
+    })
+
+
+
+
+    // instructors get operation
+    app.get('/instructors', async(req, res)=>{
+      const result = await instructorCollection.find().toArray()
+      res.send(result)
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
