@@ -13,7 +13,22 @@ app.use(cors())
 app.use(express.json())
 
 // will write verify jwt out of mongodb
+const verifyJWT = (req, res, next) =>{
+  const authorization = req.headers.authorization;
+  if(!authorization){
+    res.status(401).send({error: true, message: 'Unauthorized Credentials'})
+  }
 
+  // bearer token
+  const token = authorization.split(' ')[1];
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded)=>{
+    if(err){
+      return res.status(401).send({error: true, message: 'unauthorized credential'})
+    }
+    req.decoded = decoded;
+    next();
+  })
+}
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.gqha5r5.mongodb.net/?retryWrites=true&w=majority`;
@@ -37,6 +52,15 @@ async function run() {
     const userCollection = client.db('summerCamp').collection('users')
     const classCollection = client.db('summerCamp').collection('classes')
     const instructorCollection = client.db('summerCamp').collection('instructors')
+
+
+    // admin check 
+
+
+
+
+    // instructor check
+
 
     // user collection work here
     app.post('/users', async(req, res) =>{
