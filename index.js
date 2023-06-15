@@ -48,7 +48,7 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     //this line might create problem
-    await client.connect();
+    // await client.connect();
 
     // collection here
     const userCollection = client.db('summerCamp').collection('users')
@@ -177,7 +177,7 @@ async function run() {
 
     // enrolled class work
     // set all the enroll class details as well email then get it with email
-    
+
 
 
     // instructors get operation
