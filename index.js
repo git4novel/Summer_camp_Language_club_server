@@ -73,10 +73,43 @@ async function run() {
   
     // user collection work here
     app.get('/users', verifyJWT, verifyAdmin, async(req, res) =>{
-      const result = await userCollection.find().toArray;
+      const result = await userCollection.find().toArray();
       res.send(result)
     })
 
+    // checking if usr is admin
+     // security layer 1: verify jwt
+    app.get('/users/admin/:email', verifyJWT, async(req, res) =>{
+      const email = req.params.email;
+      // second secure layer
+      if(req.decoded.email !== email){
+        res.send({admin: false})
+      }
+
+      const query = {email: email}
+      const user = await userCollection.findOne(query)
+      const result = {admin: user?.role === 'admin'}
+      res.send(result)
+    })
+
+    // instructor check
+    app.get('/users/instructor/:email', verifyJWT, async(req, res) =>{
+      const email = req.params.email;
+      // second secure layer
+      if(req.decoded.email !== email){
+        res.send({instructor: false})
+      }
+      const query = {email: email}
+      const user = await userCollection.findOne(query)
+      const result = {instructor: user?.role === 'instructor'}
+      res.send(result)
+    })
+
+    // updating user into different things(this will done by admin)
+
+
+
+    // create user in mongo
     app.post('/users', async(req, res) =>{
       const user = req.body;
       const query = {email: user.email}
