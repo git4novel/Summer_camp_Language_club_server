@@ -57,6 +57,9 @@ async function run() {
 
     const studentAddedClassCollection = client.db('summerCamp').collection('studentAddedClass')
 
+    const enrolledClassesCollection = client.db('summerCamp').collection('enrolledClass')
+
+
     // verify admin
     const verifyAdmin = async(req, res, next)=>{
       const email = req.decoded.email;
@@ -166,11 +169,15 @@ async function run() {
     app.delete('/studentclass/:id', async(req, res)=>{
       const id = req.params.id;
       const query = {_id: new ObjectId(id)}
-      const result = await studentAddedClassCollection(query);
+      const result = await studentAddedClassCollection.deleteOne(query);
       res.send(result)
     })
 
 
+
+    // enrolled class work
+    // set all the enroll class details as well email then get it with email
+    
 
 
     // instructors get operation
