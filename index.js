@@ -1,5 +1,5 @@
 const express = require('express');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express()
 const cors = require('cors');
 require('dotenv').config()
@@ -55,6 +55,7 @@ async function run() {
     const classCollection = client.db('summerCamp').collection('classes')
     const instructorCollection = client.db('summerCamp').collection('instructors')
 
+    const studentAddedClassCollection = client.db('summerCamp').collection('studentAddedClass')
 
     // verify admin
     const verifyAdmin = async(req, res, next)=>{
@@ -132,9 +133,40 @@ async function run() {
     // --------------------------------
 
     // classes collection
-    // all classes show to classes page
+    // all classes show to classes page (teacher added class)
     app.get('/classes', async(req, res)=>{
       const result = await classCollection.find().toArray()
+      res.send(result)
+    })
+
+    // student added class connection here
+    // ----cart collection
+    app.post('/studentclass', async(req, res)=>{
+      const item = req.body;
+      const result = await studentAddedClassCollection.insertOne(item);
+      res.send(result)
+    })
+
+    app.get('/studentclass', verifyJWT, async(req, res)=>{
+      const email = req.query.email;
+      if(!email){
+        res.send([])
+      }
+
+      const decodedEmail = req.decoded.email;
+      if(email !== decodedEmail){
+        res.status(403).send({error: true, message: 'forbidded'})
+      }
+
+      const query = {email: email}
+      const result = await studentAddedClassCollection.find(query).toArray();
+      res.send(result)
+    })
+
+    app.delete('/studentclass/:id', async(req, res)=>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await studentAddedClassCollection(query);
       res.send(result)
     })
 
