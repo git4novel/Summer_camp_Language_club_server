@@ -139,10 +139,31 @@ async function run() {
 
     // classes collection
     // all classes show to classes page (teacher added class)
-    app.get('/classes', async(req, res)=>{
-      const result = await classCollection.find().toArray()
+    app.get('/approvedclasses', async(req, res)=>{
+      const result = await classCollection.find({ pendingStatus: 'approved' }).toArray()
       res.send(result)
     })
+
+    // get classes by email by an instructor
+    app.get('/classes', async(req,res)=>{
+      const email = req.query.email;
+      if(!email){
+        res.send([]);
+        return;
+      }
+
+      const query = {email: email};
+      const result = await classCollection.find(query).toArray();
+      res.send(result)
+    })
+
+    // added class by instructor
+    app.post('/instructoraddclass', async(req, res)=>{
+      const item = req.body;
+      const result = await classCollection.insertOne(item);
+      res.send(result)
+    })
+
 
     // student added class connection here
     // ----cart collection
